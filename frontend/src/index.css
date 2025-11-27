@@ -1,0 +1,175 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* 🎨 VARIABLES DE TEMA */
+:root {
+  --bg-color: #ffffff;
+  --text-color: #1a1a1a;
+  --primary-color: #6b46c1;
+  --accent-color: #d6bcfa;
+  --transition-speed: 0.35s;
+}
+
+.dark {
+  --bg-color: #0f172a;
+  --text-color: #f9fafb;
+  --primary-color: #a78bfa;
+  --accent-color: #7c3aed;
+}
+
+/* 🌍 ESTILOS GLOBALES */
+html, body, #root {
+  height: 100%;
+  width: 100%;
+  background-color: var(--bg-color);
+  color: var(--text-color);
+  font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI',
+    Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+  transition: background-color var(--transition-speed) ease,
+              color var(--transition-speed) ease;
+  overflow-x: hidden;
+  scroll-behavior: smooth;
+}
+
+/* ✨ SCROLLBAR PERSONALIZADO */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--accent-color);
+  border-radius: 10px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--primary-color);
+}
+
+/* 💎 FORMULARIO GLASSMORPHISM */
+.glass-form {
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 24px;
+  padding: 2.5rem 3rem;
+  box-shadow: 0 8px 40px rgba(0, 0, 0, 0.5);
+  width: 360px;
+  text-align: center;
+  color: #fff;
+  transition: transform 0.4s ease, box-shadow 0.4s ease;
+  position: relative;
+  z-index: 1;
+}
+
+.glass-form:hover {
+  transform: scale(1.02);
+  box-shadow: 0 12px 50px rgba(0, 0, 0, 0.6);
+}
+
+/* 🔘 INPUTS */
+.glass-input {
+  width: 100%;
+  padding: 12px 18px;
+  border-radius: 50px;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  background: rgba(255, 255, 255, 0.15);
+  color: #fff;
+  font-size: 15px;
+  transition: all 0.3s ease;
+  outline: none;
+}
+
+.glass-input::placeholder {
+  color: rgba(255, 255, 255, 0.75);
+}
+
+.glass-input:focus {
+  background: rgba(255, 255, 255, 0.25);
+  border-color: rgba(255, 255, 255, 0.5);
+}
+
+/* 🚀 BOTÓN LOGIN */
+.glass-button {
+  background: linear-gradient(90deg, #ff3c3c, #ff5555);
+  border: none;
+  border-radius: 50px;
+  color: white;
+  font-weight: bold;
+  font-size: 15px;
+  padding: 12px 0;
+  width: 100%;
+  margin-top: 12px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(255, 60, 60, 0.3);
+}
+
+.glass-button:hover {
+  background: linear-gradient(90deg, #ff5555, #ff3c3c);
+  box-shadow: 0 6px 25px rgba(255, 60, 60, 0.5);
+  transform: scale(1.03);
+}
+
+/* 🔗 ENLACES Y REDES SOCIALES */
+.glass-links {
+  display: flex;
+  justify-content: space-between;
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.8);
+  margin-top: 10px;
+}
+
+.glass-links a:hover {
+  text-decoration: underline;
+  color: #fff;
+}
+
+.glass-social {
+  margin-top: 20px;
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 14px;
+}
+
+.glass-social-icons {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+  margin-top: 10px;
+}
+
+.glass-social-icons button {
+  background: #fff;
+  border: none;
+  border-radius: 50%;
+  width: 38px;
+  height: 38px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+}
+
+.glass-social-icons button:hover {
+  transform: scale(1.1);
+  box-shadow: 0 0 15px rgba(255, 255, 255, 0.4);
+}
+
+/* 🌈 EFECTOS DE FONDO ANIMADOS */
+@keyframes gradientMove {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+.animate-gradientMove {
+  background-size: 200% 200%;
+  animation: gradientMove 10s ease infinite;
+}
+
+/* 🪶 ENTRADA SUAVE */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(15px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.animate-fadeIn {
+  animation: fadeIn 0.8s ease-out forwards;
+}
