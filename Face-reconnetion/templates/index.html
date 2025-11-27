@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="es" class="h-full bg-gray-900">
+<head>
+    <meta charset="UTF-8"> <!-- Corregido de UTF-A a UTF-8 -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard de Asistencia</title>
+    <!-- 1. Cargamos Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Fuente Inter de Google Fonts */
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+    </style>
+</head>
+<body class="h-full">
+    <div class="min-h-full">
+        <!-- Encabezado -->
+        <header class="bg-gray-800 shadow">
+            <div class="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8 flex justify-between items-center">
+                <div>
+                    <h1 class="text-3xl font-bold tracking-tight text-white">
+                        Dashboard de Asistencia (En Vivo)
+                    </h1>
+                    <!-- Mostramos el nombre del usuario logueado -->
+                    <p class="text-gray-400 text-sm mt-1">Usuario: {{ username }}</p>
+                </div>
+                <!-- BOTÓN DE CERRAR SESIÓN -->
+                <div>
+                    <a href="{{ url_for('logout') }}" 
+                       class="rounded-md bg-red-600 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-red-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-600">
+                        Cerrar Sesión
+                    </a>
+                </div>
+            </div>
+        </header>
+
+        <!-- Contenido Principal -->
+        <main>
+            <div class="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
+                <!-- Sección de Alertas (Flash Messages) -->
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                    {% if messages %}
+                        {% for category, message in messages %}
+                            <div class="rounded-md p-4 mb-4 {{ 'bg-green-800 border-green-900' if category == 'success' else 'bg-blue-800 border-blue-900' }} border">
+                                <p class="text-sm font-medium text-white">{{ message }}</p>
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+                {% endwith %}
+
+                <div class="px-4 sm:px-6 lg:px-8">
+                    <div class="sm:flex sm:items-center">
+                        <div class="sm:flex-auto">
+                            <h2 class="text-base font-semibold leading-6 text-white">Estudiantes Registrados Hoy</h2>
+                            <p class="mt-2 text-sm text-gray-300">
+                                Lista de estudiantes que han ingresado. La lista se actualiza automáticamente cada 5 segundos.
+                            </p>
+                        </div>
+                    </div>
+                    <!-- Tabla de Asistencia -->
+                    <div class="mt-8 flow-root">
+                        <div class="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
+                            <div class="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
+                                <div class="overflow-hidden shadow ring-1 ring-black ring-opacity-5 sm:rounded-lg">
+                                    <table class="min-w-full divide-y divide-gray-700">
+                                        <thead class="bg-gray-800">
+                                            <tr>
+                                                <th scope="col" class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-white sm:pl-6">Nombre</th>
+                                                <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-white">Curso</th>
+                                                <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-white">Hora de Ingreso</th>
+                                            </tr>
+                                        </thead>
+                                        <!-- El cuerpo de la tabla se llenará con JavaScript -->
+                                        <tbody class="divide-y divide-gray-800 bg-gray-900" id="tabla-asistencia">
+                                            <!-- Fila de ejemplo (será reemplazada) -->
+                                            <tr>
+                                                <td colspan="3" class="whitespace-nowrap px-3 py-4 text-sm text-gray-400 text-center">
+                                                    Cargando datos...
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- 2. El JavaScript que pide los datos -->
+    <script>
+        // La URL de tu API.
+        const API_URL = '{{ url_for("obtener_asistencia_hoy") }}';
+        
+        async function actualizarTabla() {
+            try {
+                // 1. Pedir los datos a la API
+                const respuesta = await fetch(API_URL);
+                
+                // --- MANEJO DE LOGIN ---
+                // Si la API nos redirige (porque la sesión expiró),
+                // recargamos la página para ir al login.
+                if (respuesta.redirected) {
+                    window.location.href = respuesta.url;
+                    return;
+                }
+                // --- FIN MANEJO DE LOGIN ---
+
+                if (!respuesta.ok) {
+                    throw new Error('Error al conectar con la API');
+                }
+                const asistencias = await respuesta.json();
+
+                // (El resto del script de la tabla no cambia)
+                const tbody = document.getElementById('tabla-asistencia');
+                tbody.innerHTML = '';
+                if (asistencias.length === 0) {
+                    tbody.innerHTML = `
+                        <tr>
+                            <td colspan="3" class="whitespace-nowrap px-3 py-4 text-sm text-gray-400 text-center">
+                                Aún no hay registros de asistencia hoy.
+                            </td>
+                        </tr>
+                    `;
+                    return;
+                }
+                asistencias.forEach(registro => {
+                    const fila = `
+                        <tr>
+                            <td class="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-white sm:pl-6">${registro.nombre}</td>
+                            <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-300">${registro.curso}</td>
+                            <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-300">${registro.hora_ingreso}</td>
+                        </tr>
+                    `;
+                    tbody.innerHTML += fila;
+                });
+            } catch (error) {
+                console.error('Error al cargar asistencia:', error);
+                const tbody = document.getElementById('tabla-asistencia');
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="3" class="whitespace-nowrap px-3 py-4 text-sm text-red-400 text-center">
+                            Error al cargar datos. ¿Sesión expirada?
+                        </td>
+                    </tr>
+                `;
+            }
+        }
+        actualizarTabla();
+        setInterval(actualizarTabla, 5000);
+    </script>
+</body>
+</html>
